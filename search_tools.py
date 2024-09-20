@@ -1,5 +1,5 @@
 import re, os
-import requests, logging
+import requests, logging, urllib.request
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -101,6 +101,34 @@ def main(query: str, api_key: str, search_engine_id: str,
     filename = f"{outpath}/{query_string_clean}_start_{start_page_index}_results_{result_total}.csv"
     df.to_csv(f"{filename}", index=False)
     logging.info(f"main: images saved to {filename}.csv")
+
+
+def download_image(image_url: str, save_path: str) -> str:
+    """
+    Downloads an image from a URL to a specified path. Returns
+    a status message about download success.
+    """
+    try:
+        urllib.request.urlretrieve(image_url, save_path)
+        logging.info(f"download_image: successfully downloaded {image_url} to {save_path}")
+        return "success"
+    except Exception as e:
+        logging.error(f"download_image: failed to download {image_url}. Error: {e}")
+        return "failed"
+    
+def download_images_from_dataframe(df_path: str, url_column: str, output_path: str) -> None:
+    """
+    Loops across all the values from a column in a dataframe containing URLs
+    and applies the function download_image sequentially.
+    """
+
+    df = pd.read_csv(df_path)
+    
+    for index, row in df.iterrows():
+        image_url = row[url_column]
+        save_path = os.path.join(output_path, f"image_{index}.jpg")
+        status = download_image(image_url, save_path)
+        logging.info(f"download_images_from_dataframe: {status} for {image_url}")
 
 
 if __name__ == "__main__":
