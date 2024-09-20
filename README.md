@@ -12,7 +12,7 @@
 **Strategy**
 
 - Create a list/json of all actors/actresses
-- Scrape 500 images for each emotion by actors/actresses (3 days per actor/actress)
+- Scrape 500 images for each emotion by actors/actresses (3 1/2 days per actor/actress)
 - Use Deepface to discard images w/out faces and estimate emotions
 - Compare images using SIFT w/ a benchmark from each actor/actress to make sure they are images of them
 

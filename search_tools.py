@@ -20,7 +20,7 @@ def clean_filename(filename: str) -> str:
     Removes special characters from a string to 
     make it suitable for a filename.
     """
-    filename = re.sub(r'[\\/*?:"<>~]', "_", filename) # remove special characters
+    filename = re.sub(r'[\\/*?:"<>~ ]', "_", filename) # remove special characters and replace spaces
     return filename
 
 def build_payload(query: str, api_key: str, 
@@ -94,12 +94,13 @@ def main(query: str, api_key: str, search_engine_id: str,
             logging.info(f"main: images fetched for page: {i + 1}")
     except Exception as e:
         logging.error(f"main: no more images available: {e}")
-        return None
+        result_total = len(items) # update num total results
 
     query_string_clean = clean_filename(query) # clean query string
     df = pd.json_normalize(items) # convert to df
-    df.to_csv(f"{outpath}/" + f"{query_string_clean}.csv", index=False)
-    logging.info(f"main: images saved to {outpath}/{query_string_clean}_start_{start_page_index}_results_{result_total}.csv")
+    filename = f"{outpath}/{query_string_clean}_start_{start_page_index}_results_{result_total}.csv"
+    df.to_csv(f"{filename}", index=False)
+    logging.info(f"main: images saved to {filename}.csv")
 
 
 if __name__ == "__main__":
@@ -108,7 +109,7 @@ if __name__ == "__main__":
     API_KEY = os.environ.get("API_KEY")
     SEARCH_ENGINE_ID = os.environ.get("SEARCH_ENGINE_ID")
     OUTPATH = os.environ.get("OUTPATH")
-    START_PAGE_INDEX = int(os.environ.get("START_PAGE_INDEX")) # needs to be integer
+    START_PAGE_INDEX = int(os.environ.get("START_PAGE_INDEX")) # needs to be integer (num_page - 1)
     SEARCH_QUERY = os.environ.get("SEARCH_QUERY")
     TOTAL_RESULTS = int(os.environ.get("TOTAL_RESULTS")) # needs to be integer
 
